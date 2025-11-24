@@ -330,10 +330,300 @@ Create the SmartUI configuration file using:
 npx smartui config:create smartui-web.json
 ```
 
+## Best Practices
+
+### Screenshot Naming
+
+- Use descriptive, unique names for each screenshot
+- Include page/component name and state (e.g., `homepage-logged-in`, `checkout-step-2`)
+- Avoid special characters that might cause issues in URLs
+- Use consistent naming conventions across your test suite
+
+### When to Take Screenshots
+
+- **Critical user flows**: Login, checkout, payment
+- **Dynamic content**: After user interactions, form submissions
+- **Responsive breakpoints**: Different viewport sizes
+- **State changes**: Before and after important actions
+
+### Performance Optimization
+
+- Take screenshots only when necessary (not on every page load)
+- Use `waitForPageRender` in `smartui-web.json` for slow-loading pages
+- Consider viewport-specific screenshots instead of full-page when possible
+- Use ignore options to reduce false positives from dynamic content
+
+### Error Handling
+
+```javascript
+try {
+  await driver.get('https://www.lambdatest.com');
+  await smartuiSnapshot(driver, "homepage");
+} catch (error) {
+  console.error('Screenshot failed:', error);
+  // Handle error appropriately
+  throw error;
+} finally {
+  await driver.quit();
+}
+```
+
+## Common Use Cases
+
+### Multiple Screenshots in Sequence
+
+```javascript
+await driver.get('https://www.lambdatest.com');
+await smartuiSnapshot(driver, "homepage");
+
+await driver.findElement(By.linkText('Pricing')).click();
+await smartuiSnapshot(driver, "pricing-page");
+
+await driver.findElement(By.linkText('Documentation')).click();
+await smartuiSnapshot(driver, "documentation-page");
+```
+
+### Screenshot After User Interaction
+
+```javascript
+await driver.get('https://www.lambdatest.com');
+
+// Wait for element and interact
+const searchBox = await driver.findElement(By.id('search'));
+await searchBox.sendKeys('Selenium');
+await searchBox.sendKeys(Key.RETURN);
+
+// Wait for results to load
+await driver.wait(until.elementLocated(By.className('results')), 10000);
+
+// Take screenshot after interaction
+await smartuiSnapshot(driver, "search-results");
+```
+
+### Conditional Screenshots
+
+```javascript
+const isLoggedIn = await driver.findElements(By.className('user-menu')).length > 0;
+
+if (isLoggedIn) {
+  await smartuiSnapshot(driver, "homepage-logged-in");
+} else {
+  await smartuiSnapshot(driver, "homepage-guest");
+}
+```
+
+## CI/CD Integration
+
+### GitHub Actions Example
+
+```yaml
+name: SmartUI Visual Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  visual-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      
+      - name: Install dependencies
+        run: |
+          cd sdk
+          npm ci
+      
+      - name: Run SmartUI tests
+        env:
+          PROJECT_TOKEN: ${{ secrets.SMARTUI_PROJECT_TOKEN }}
+          LT_USERNAME: ${{ secrets.LT_USERNAME }}
+          LT_ACCESS_KEY: ${{ secrets.LT_ACCESS_KEY }}
+        run: |
+cd sdk
+          npx smartui exec node sdkCloud.js
+```
+
+### Jenkins Pipeline Example
+
+```groovy
+pipeline {
+    agent any
+    
+    environment {
+        PROJECT_TOKEN = credentials('smartui-project-token')
+        LT_USERNAME = credentials('lambdatest-username')
+        LT_ACCESS_KEY = credentials('lambdatest-access-key')
+    }
+    
+    stages {
+        stage('Install Dependencies') {
+            steps {
+                sh 'cd sdk && npm ci'
+            }
+        }
+        
+        stage('Run Visual Tests') {
+            steps {
+                sh 'cd sdk && npx smartui exec node sdkCloud.js'
+            }
+        }
+    }
+}
+```
+
+## Troubleshooting
+
+### Issue: `Error: SmartUI Config already exists: smartui-web.json`
+
+**Solution**: This is informational. The config file already exists. You can:
+- Use the existing config file
+- Delete it and create a new one: `rm smartui-web.json && npx smartui config:create smartui-web.json`
+- Use a different config file: `npx smartui --config custom-config.json exec ...`
+
+### Issue: `PROJECT_TOKEN is required`
+
+**Solution**: Ensure the `PROJECT_TOKEN` environment variable is set:
+```bash
+export PROJECT_TOKEN='your_project_token'
+# Verify it's set
+echo $PROJECT_TOKEN
+```
+
+### Issue: `Unauthorized, either Username or AccessKey is invalid` (Cloud)
+
+**Solution**: 
+1. Verify your credentials are set correctly:
+   ```bash
+   echo $LT_USERNAME
+   echo $LT_ACCESS_KEY
+   ```
+2. Check your credentials in [LambdaTest Profile Settings](https://accounts.lambdatest.com/profile)
+3. Ensure there are no extra spaces or quotes in the environment variables
+
+### Issue: `Cannot find module '@lambdatest/selenium-driver'`
+
+**Solution**: Install dependencies:
+```bash
+cd sdk
+npm install @lambdatest/smartui-cli @lambdatest/selenium-driver selenium-webdriver
+```
+
+### Issue: Screenshots not appearing in SmartUI Dashboard
+
+**Solution**:
+1. Verify the `PROJECT_TOKEN` matches your SmartUI project
+2. Check that the build completed successfully (no errors in terminal)
+3. Wait a few moments for screenshots to process
+4. Verify you're looking at the correct project in the dashboard
+
+### Issue: `ChromeDriver version mismatch` (Local)
+
+**Solution**: 
+1. Update ChromeDriver: `npm install --save-dev chromedriver`
+2. Or use WebDriver Manager: `npm install --save-dev webdriver-manager`
+3. Ensure Chrome browser is up to date
+
+### Issue: Timeout errors when taking screenshots
+
+**Solution**: 
+1. Increase `waitForPageRender` in `smartui-web.json`:
+   ```json
+   {
+     "web": {
+       "waitForPageRender": 60000
+     }
+   }
+   ```
+2. Add explicit waits before taking screenshots:
+   ```javascript
+   await driver.wait(until.elementLocated(By.id('main-content')), 10000);
+   await smartuiSnapshot(driver, "screenshot");
+   ```
+
+### Issue: False positives in visual comparisons
+
+**Solution**:
+1. Use ignore options for dynamic content (ads, timestamps, etc.)
+2. Increase `waitForTimeout` in `smartui-web.json` for lazy-loaded content
+3. Use viewport-specific screenshots instead of full-page when appropriate
+4. Review and update baseline screenshots when intentional changes are made
+
+## Configuration Tips
+
+### Optimizing `smartui-web.json`
+
+```json
+{
+  "web": {
+    "browsers": ["chrome", "firefox"],
+    "viewports": [
+      [1920, 1080],
+      [1366, 768],
+      [360, 640]
+    ],
+    "waitForPageRender": 30000,
+    "waitForTimeout": 2000
+  }
+}
+```
+
+**Tips**:
+- Start with fewer browsers/viewports for faster initial testing
+- Adjust `waitForPageRender` based on your page load times
+- Use `waitForTimeout` for async components (lazy-loaded images, animations)
+
+### Environment-Specific Configuration
+
+Create different config files for different environments:
+
+```bash
+# Development
+npx smartui --config smartui-dev.json exec node sdkLocal.js
+
+# Staging
+npx smartui --config smartui-staging.json exec node sdkCloud.js
+
+# Production
+npx smartui --config smartui-prod.json exec node sdkCloud.js
+```
+
 ## View Results
 
 After running the tests, visit your SmartUI project dashboard to view the captured screenshots and compare them with baseline builds.
 
-## More Information
+### Understanding Results
 
-For detailed onboarding instructions, see the [SmartUI Selenium JavaScript Onboarding Guide](https://www.lambdatest.com/support/docs/smartui-onboarding-selenium-js/).
+- **Baseline Created**: First run creates baseline screenshots
+- **Passed**: Screenshot matches baseline (no visual differences)
+- **Failed**: Visual differences detected
+- **Review Required**: Manual review needed for differences
+
+### Managing Baselines
+
+- Update baseline when intentional UI changes are made
+- Review failed comparisons to identify false positives
+- Use ignore options to exclude known dynamic content
+
+## Additional Resources
+
+- [SmartUI Selenium JavaScript Onboarding Guide](https://www.lambdatest.com/support/docs/smartui-onboarding-selenium-js/)
+- [LambdaTest Selenium Documentation](https://www.lambdatest.com/support/docs/selenium-automation/)
+- [SmartUI Dashboard](https://smartui.lambdatest.com/)
+- [LambdaTest Automation Dashboard](https://automation.lambdatest.com/)
+- [LambdaTest Community](https://community.lambdatest.com/)
+- [LambdaTest Blog](https://www.lambdatest.com/blog/)
+
+## Support
+
+For additional help:
+- [LambdaTest Support](https://www.lambdatest.com/support/)
+- [Documentation](https://www.lambdatest.com/support/docs/)
+- [24/7 Chat Support](https://www.lambdatest.com/)
