@@ -160,6 +160,12 @@ import { smartuiSnapshot } from '@lambdatest/selenium-driver';
 ```
 - Execute the Tests on SmartUI Cloud
 
+**Local Execution:**
 ```bash
-npx smartui exec node <fileName>.js
+npx smartui exec node sdkLocal.js
+```
+
+**Cloud Execution:**
+```bash
+npx smartui exec node sdkCloud.js
 ```

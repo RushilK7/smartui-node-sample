@@ -155,10 +155,16 @@ import { smartuiSnapshot } from '@lambdatest/selenium-driver';
 
 ### **Step 6:** Execute the Tests on SmartUI Cloud
 
-Execute `visual regression tests` on SmartUI using the following commands
+Execute `visual regression tests` on SmartUI using the following commands:
 
+**Local Execution:**
 ```bash
-npx smartui exec node <fileName>.js
+npx smartui exec node sdkLocal.js
+```
+
+**Cloud Execution:**
+```bash
+npx smartui exec node sdkCloud.js
 ```
 
 **You may use the `smartui --help` command in case you are facing issues during the execution of SmartUI commands in the CLI.
