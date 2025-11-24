@@ -128,7 +128,7 @@ This repository also includes examples for using SmartUI with LambdaTest Hooks i
 
 **Purpose:** Enhance visual regression capabilities in your LambdaTest web automation tests running on LambdaTest Cloud Grid.
 
-**Documentation:** [LambdaTest Selenium Visual Regression Documentation](https://www.lambdatest.com/support/docs/selenium-visual-regression/).
+**Documentation:** [LambdaTest Selenium Visual Regression Documentation](https://www.lambdatest.com/support/docs/selenium-visual-regression-testing/).
 
 ### Hooks Setup Steps
 
