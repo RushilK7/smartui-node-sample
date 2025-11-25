@@ -1,165 +1,629 @@
-<h1>Smart UI Testing With Selenium Node.JS</h1>
+# SmartUI SDK Sample for Selenium JavaScript
 
-<img height="400" src="https://user-images.githubusercontent.com/126776938/232535511-8d51cf1b-1a33-48fc-825c-b13e7a9ec388.png">
+Welcome to the SmartUI SDK sample for Selenium JavaScript. This repository demonstrates how to integrate SmartUI visual regression testing with Selenium JavaScript.
 
+## Repository Structure
 
-<p align="center">
-  <a href="https://www.lambdatest.com/blog/?utm_source=github&utm_medium=repo&utm_campaign=playwright-sample" target="_bank">Blog</a>
-  &nbsp; &#8901; &nbsp;
-  <a href="https://www.lambdatest.com/support/docs/?utm_source=github&utm_medium=repo&utm_campaign=playwright-sample" target="_bank">Docs</a>
-  &nbsp; &#8901; &nbsp;
-  <a href="https://www.lambdatest.com/learning-hub/?utm_source=github&utm_medium=repo&utm_campaign=playwright-sample" target="_bank">Learning Hub</a>
-  &nbsp; &#8901; &nbsp;
-  <a href="https://www.lambdatest.com/newsletter/?utm_source=github&utm_medium=repo&utm_campaign=playwright-sample" target="_bank">Newsletter</a>
-  &nbsp; &#8901; &nbsp;
-  <a href="https://www.lambdatest.com/certifications/?utm_source=github&utm_medium=repo&utm_campaign=playwright-sample" target="_bank">Certifications</a>
-  &nbsp; &#8901; &nbsp;
-  <a href="https://www.youtube.com/c/LambdaTest" target="_bank">YouTube</a>
-</p>
-&emsp;
-&emsp;
-&emsp;
-
-*Learn the how to get started with Smart UI testing with Selenium Node.JS on the LambdaTest platform.*
-
-
-[<img height="58" width="200" src="https://user-images.githubusercontent.com/70570645/171866795-52c11b49-0728-4229-b073-4b704209ddde.png">](https://accounts.lambdatest.com/register?utm_source=github&utm_medium=repo&utm_campaign=playwright-sample)
-
-
-## Getting Started with Smart UI Testing
-
-Smart UI testing is an integral part of ensuring visual consistency across different environments for your web application. Using the LambdaTest platform with Selenium and Node.js, this process becomes intuitive and efficient.
-
-### Pre-Requisites: 
-
-To execute the tests, your need to login to your lambdatest account and from the `Sidebar` you can find the `Username` and `Access Key` information which needs to be added to your environment variables: 
-
-For MacOS/Linux: 
-
-```bash
-export LT_USERNAME="<Your Username>"
-export LT_ACCESS_KEY="<Your Access Key>"
+```
+smartui-node-sample/
+├── sdk/
+│   ├── sdkCloud.js          # Cloud test
+│   ├── sdkLocal.js          # Local test
+│   └── smartui-web.json     # SmartUI config (create with npx smartui config:create)
+└── hooks/                    # Hooks integration examples
+    └── examples/             # Hooks examples
 ```
 
-For Windows CMD
+## 1. Prerequisites and Environment Setup
 
+### Prerequisites
+
+- Node.js installed
+- LambdaTest account credentials (for Cloud tests)
+- Chrome browser (for Local tests)
+
+### Environment Setup
+
+**For Cloud:**
 ```bash
-set LT_USERNAME="<Your Username>"
-set LT_ACCESS_KEY="<Your Access Key>"
+export LT_USERNAME='your_username'
+export LT_ACCESS_KEY='your_access_key'
+export PROJECT_TOKEN='your_project_token'
 ```
 
-For Windows PowerShell
-
+**For Local:**
 ```bash
-$env:LT_USERNAME="<Your Username>"
-$env:LT_ACCESS_KEY="<Your Access Key>"
+export PROJECT_TOKEN='your_project_token'
 ```
 
-Now, navigate to `SmartUI` section from the sidebar and create a new project with the `project type` as the following: 
+## 2. Initial Setup and Dependencies
 
-- **Web** - For running the tests using `hooks` within the `selenium/cypress/playwright` functional tests.
-- **CLI** - For running your `SDK` execution for DOM capture and render on multiple browsers and viewports for comparison.
+### Clone the Repository
 
-### Features
+```bash
+git clone https://github.com/LambdaTest/smartui-node-sample
+cd smartui-node-sample/sdk
+```
 
-#### LT-Hooks Integration
-- **Location:** See the `hooks` folder, where you can see all the `examples` scripts to setup your suite or run the demo.  
-- **Purpose:** Enhance visual regression capabilities in your LambdaTest web automation tests.
-- **Benefits:** Increase efficiency with advanced testing features with visual regression testing.
-- **Documentation:** [LambdaTest Selenium Visual Regression Documentation](https://www.lambdatest.com/support/docs/selenium-visual-regression/).
-##### **Steps:**
-- Install the dependencies.
+### Install Dependencies
+
+Install the required dependencies:
+
+```bash
+npm i @lambdatest/smartui-cli @lambdatest/selenium-driver selenium-webdriver
+```
+
+**Dependencies included:**
+- `@lambdatest/smartui-cli` - SmartUI CLI
+- `@lambdatest/selenium-driver` - SmartUI SDK for Selenium JavaScript
+- `selenium-webdriver` - Selenium WebDriver
+
+**Note**: To ensure seamless execution of ES6 modules, add `"type": "module"` to your `package.json` file.
+
+### Create SmartUI Configuration
+
+```bash
+npx smartui config:create smartui-web.json
+```
+
+## 3. Steps to Integrate Screenshot Commands into Codebase
+
+The SmartUI screenshot function is already implemented in the repository.
+
+**Cloud Test** (`sdk/sdkCloud.js`):
+```javascript
+import { smartuiSnapshot } from '@lambdatest/selenium-driver';
+
+await driver.get('https://www.lambdatest.com');
+await smartuiSnapshot(driver, "screenshot");
+```
+
+**Local Test** (`sdk/sdkLocal.js`):
+```javascript
+import { smartuiSnapshot } from '@lambdatest/selenium-driver';
+
+await driver.get('https://www.lambdatest.com');
+await smartuiSnapshot(driver, "screenshot");
+```
+
+**Note**: The code is already configured and ready to use. You can modify the URL and screenshot name if needed.
+
+## 4. Execution and Commands
+
+### Local Execution
+
+```bash
+npx smartui exec node sdkLocal.js
+```
+
+### Cloud Execution
+
+```bash
+npx smartui exec node sdkCloud.js
+```
+
+## Testing with LambdaTest Hooks
+
+This repository also includes examples for using SmartUI with LambdaTest Hooks integration. Hooks-based integration allows you to use SmartUI directly within your existing LambdaTest Cloud automation tests without requiring the SmartUI CLI.
+
+### SDK vs Hooks: Which Approach to Use?
+
+**SDK Approach (Recommended for Local Testing):**
+- ✅ Works with both local and cloud execution
+- ✅ Uses SmartUI CLI for configuration and execution
+- ✅ Supports multiple browsers and viewports via `smartui-web.json`
+- ✅ Better for CI/CD integration
+- ✅ Requires `PROJECT_TOKEN` environment variable
+
+**Hooks Approach (Recommended for Cloud-Only Testing):**
+- ✅ Works only with LambdaTest Cloud Grid
+- ✅ No CLI required - direct integration with LambdaTest
+- ✅ Uses LambdaTest capabilities for configuration
+- ✅ Better for existing LambdaTest automation suites
+- ✅ Requires `LT_USERNAME` and `LT_ACCESS_KEY` environment variables
+
+### Hooks Integration Setup
+
+**Location:** See the `hooks` folder, where you can see all the `examples` scripts to setup your suite or run the demo.
+
+**Purpose:** Enhance visual regression capabilities in your LambdaTest web automation tests running on LambdaTest Cloud Grid.
+
+**Documentation:** [LambdaTest Selenium Visual Regression Documentation](https://www.lambdatest.com/support/docs/selenium-visual-regression-testing/).
+
+### Hooks Setup Steps
+
+#### 1. Install Dependencies
+
+Navigate to the hooks directory and install dependencies:
+
 ```bash
 cd hooks
-npm i
+npm i selenium-webdriver
 ```
-- Configure the capabilities (SmartUI Project Name and other SmartUI options) in .examples\test.js
-```javascript
-let capabilities = {
-  platform: "Windows 10", // Configure your OS for Selenium test
-  browserName: "chrome", // Configure your Browser for Selenium test
-  version: "latest", // Configure your Browser Version for Selenium test
-  visual: true, // Configure your Capture screenshot  for Selenium test
-  name: "test session", // name of the test for Selenium
-  build: "Automation Build", // name of the build for Selenium
-  "smartUI.project": "<Your Project Name>", // Replace the name of project with the new project name
-  "smartUI.build": "<Your Build Name>", // Replace the name of Build with the new Build name
-  "smartUI.baseline": false, // Enable if you want to update to a new baseline build
 
+#### 2. Configure Environment Variables
+
+Set your LambdaTest credentials:
+
+```bash
+export LT_USERNAME='your_username'
+export LT_ACCESS_KEY='your_access_key'
+```
+
+#### 3. Configure Capabilities
+
+In your test file (e.g., `hooks/examples/test.js`), configure the capabilities with SmartUI options:
+
+```javascript
+const USERNAME = process.env.LT_USERNAME;
+const KEY = process.env.LT_ACCESS_KEY;
+
+let capabilities = {
+  platform: "Windows 10",
+  browserName: "chrome",
+  version: "latest",
+  visual: true,  // Enable visual testing
+  "user": USERNAME,
+  "accessKey": KEY,
+  name: "test session",
+  build: "Automation Build",
+  "LT:Options": {
+    "smartUI.project": "<Your Project Name>",  // Your SmartUI project name
+    "smartUI.build": "<Your Build Name>",      // Optional: Build name
+    "smartUI.baseline": false,                 // Set to true to update baseline
+    "smartUI.options": {
+      "output": {
+        "errorColor": { "red": 200, "green": 0, "blue": 255 },
+        "errorType": "movement",
+        "transparency": 0.3,
+        "largeImageThreshold": 100,
+        "useCrossOrigin": false,
+        "outputDiff": true
+      },
+      "scaleToSameSize": true,
+      "ignore": "antialiasing"
+    }
+  }
 };
 ```
-- Add the Screenshot hook in .examples\test.js
-```js
+
+#### 4. Connect to LambdaTest Grid
+
+Create a WebDriver instance connected to LambdaTest Cloud:
+
+```javascript
+const GRID_HOST = "@hub.lambdatest.com/wd/hub";
+const gridUrl = `https://${USERNAME}:${KEY}${GRID_HOST}`;
+
+const driver = await new webdriver.Builder()
+  .usingServer(gridUrl)
+  .withCapabilities(capabilities)
+  .build();
+```
+
+#### 5. Add Screenshot Hooks
+
+Use `driver.executeScript()` to capture screenshots at any point in your test:
+
+```javascript
+// Navigate to your page
+await driver.get('https://www.lambdatest.com');
+
+// Take a screenshot with basic configuration
 let config = {
-  screenshotName: '<Name of your screenshot>'
+  screenshotName: 'homepage-screenshot'
+};
+await driver.executeScript("smartui.takeScreenshot", config);
+
+// Take a full-page screenshot
+let fullPageConfig = {
+  screenshotName: 'homepage-full-page',
+  fullPage: true
+};
+await driver.executeScript("smartui.takeScreenshot", fullPageConfig);
+
+// Take a screenshot with custom options
+let customConfig = {
+  screenshotName: 'homepage-custom',
+  fullPage: true,
+  ignore: ["antialiasing", "colors"],
+  boundingBoxes: [{ x: 100, y: 100, width: 200, height: 200 }]
+};
+await driver.executeScript("smartui.takeScreenshot", customConfig);
+```
+
+#### 6. Run the Test
+
+Execute your test script:
+
+```bash
+node hooks/examples/test.js
+```
+
+### Advanced Hooks Examples
+
+#### Multiple Screenshots in One Test
+
+```javascript
+await driver.get('https://www.lambdatest.com');
+
+// Screenshot 1: Homepage
+await driver.executeScript("smartui.takeScreenshot", {
+  screenshotName: 'homepage'
+});
+
+// Navigate and take another screenshot
+await driver.get('https://www.lambdatest.com/pricing');
+await driver.executeScript("smartui.takeScreenshot", {
+  screenshotName: 'pricing-page'
+});
+```
+
+#### Screenshot with Ignore Areas
+
+```javascript
+let config = {
+  screenshotName: 'homepage-ignored',
+  ignore: ["antialiasing"],
+  ignoredBoxes: [
+    { x: 0, y: 0, width: 100, height: 50 }  // Ignore header area
+  ]
 };
 await driver.executeScript("smartui.takeScreenshot", config);
 ```
-- Run the script
+
+#### Screenshot with Bounding Boxes (Compare Specific Area)
+
+```javascript
+let config = {
+  screenshotName: 'homepage-bounded',
+  boundingBoxes: [
+    { x: 100, y: 200, width: 800, height: 400 }  // Compare only this area
+  ]
+};
+await driver.executeScript("smartui.takeScreenshot", config);
 ```
-node .examples\test.js
+
+### Hooks Configuration Options
+
+The `smartUI.options` in capabilities supports various configuration options:
+
+- **errorColor**: RGB values for highlighting differences
+- **errorType**: Type of error detection (`"movement"`, `"flat"`, `"flatDifferenceIntensity"`, `"movementDifferenceIntensity"`, `"diffOnly"`)
+- **transparency**: Opacity of the error overlay (0.0 to 1.0)
+- **largeImageThreshold**: Threshold for large image comparison
+- **useCrossOrigin**: Enable cross-origin resource sharing
+- **outputDiff**: Generate difference images
+- **scaleToSameSize**: Scale images to same size before comparison
+- **ignore**: Ignore specific visual artifacts (`"antialiasing"`, `"colors"`, `"less"`, `"alpha"`, `"nothing"`)
+
+### View Hooks Results
+
+After running your hooks-based tests, visit the [LambdaTest Automation Dashboard](https://automation.lambdatest.com/) to view:
+- Test execution status
+- Screenshots captured
+- Visual comparison results
+- Build and session details
+
+Navigate to your SmartUI project in the [SmartUI Dashboard](https://smartui.lambdatest.com/) to see detailed visual regression results.
+
+## Test Files
+
+### Cloud Test (`sdk/sdkCloud.js`)
+
+- Connects to LambdaTest Cloud using Selenium Remote WebDriver
+- Reads credentials from environment variables (`LT_USERNAME`, `LT_ACCESS_KEY`)
+- Takes screenshot with name: `screenshot`
+
+### Local Test (`sdk/sdkLocal.js`)
+
+- Runs Selenium locally using Chrome
+- Requires Chrome browser installed
+- Takes screenshot with name: `screenshot`
+
+## Configuration
+
+### SmartUI Config (`smartui-web.json`)
+
+Create the SmartUI configuration file using:
+```bash
+npx smartui config:create smartui-web.json
 ```
 
+## Best Practices
 
-#### SmartUI SDK Utilization
-- **Location:** Check out the `sdk` folder, and setup the environment for running the tests. 
-- **Purpose:** Use the SmartUI SDK for comprehensive visual testing in both local and remote automation tests environments.
-- **Advantages:** Ensure consistent DOM capturing and rendering across various browsers and resolutions.
-- **More Information:** [SmartUI Selenium JavaScript SDK Documentation](https://www.lambdatest.com/support/docs/smartui-selenium-js-sdk/).
+### Screenshot Naming
 
-##### Steps:
-- Install the dependencies 
+- Use descriptive, unique names for each screenshot
+- Include page/component name and state (e.g., `homepage-logged-in`, `checkout-step-2`)
+- Avoid special characters that might cause issues in URLs
+- Use consistent naming conventions across your test suite
+
+### When to Take Screenshots
+
+- **Critical user flows**: Login, checkout, payment
+- **Dynamic content**: After user interactions, form submissions
+- **Responsive breakpoints**: Different viewport sizes
+- **State changes**: Before and after important actions
+
+### Performance Optimization
+
+- Take screenshots only when necessary (not on every page load)
+- Use `waitForPageRender` in `smartui-web.json` for slow-loading pages
+- Consider viewport-specific screenshots instead of full-page when possible
+- Use ignore options to reduce false positives from dynamic content
+
+### Error Handling
+
+```javascript
+try {
+  await driver.get('https://www.lambdatest.com');
+  await smartuiSnapshot(driver, "homepage");
+} catch (error) {
+  console.error('Screenshot failed:', error);
+  // Handle error appropriately
+  throw error;
+} finally {
+  await driver.quit();
+}
+```
+
+## Common Use Cases
+
+### Multiple Screenshots in Sequence
+
+```javascript
+await driver.get('https://www.lambdatest.com');
+await smartuiSnapshot(driver, "homepage");
+
+await driver.findElement(By.linkText('Pricing')).click();
+await smartuiSnapshot(driver, "pricing-page");
+
+await driver.findElement(By.linkText('Documentation')).click();
+await smartuiSnapshot(driver, "documentation-page");
+```
+
+### Screenshot After User Interaction
+
+```javascript
+await driver.get('https://www.lambdatest.com');
+
+// Wait for element and interact
+const searchBox = await driver.findElement(By.id('search'));
+await searchBox.sendKeys('Selenium');
+await searchBox.sendKeys(Key.RETURN);
+
+// Wait for results to load
+await driver.wait(until.elementLocated(By.className('results')), 10000);
+
+// Take screenshot after interaction
+await smartuiSnapshot(driver, "search-results");
+```
+
+### Conditional Screenshots
+
+```javascript
+const isLoggedIn = await driver.findElements(By.className('user-menu')).length > 0;
+
+if (isLoggedIn) {
+  await smartuiSnapshot(driver, "homepage-logged-in");
+} else {
+  await smartuiSnapshot(driver, "homepage-guest");
+}
+```
+
+## CI/CD Integration
+
+### GitHub Actions Example
+
+```yaml
+name: SmartUI Visual Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  visual-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      
+      - name: Install dependencies
+        run: |
+          cd sdk
+          npm ci
+      
+      - name: Run SmartUI tests
+        env:
+          PROJECT_TOKEN: ${{ secrets.SMARTUI_PROJECT_TOKEN }}
+          LT_USERNAME: ${{ secrets.LT_USERNAME }}
+          LT_ACCESS_KEY: ${{ secrets.LT_ACCESS_KEY }}
+        run: |
+cd sdk
+          npx smartui exec node sdkCloud.js
+```
+
+### Jenkins Pipeline Example
+
+```groovy
+pipeline {
+    agent any
+    
+    environment {
+        PROJECT_TOKEN = credentials('smartui-project-token')
+        LT_USERNAME = credentials('lambdatest-username')
+        LT_ACCESS_KEY = credentials('lambdatest-access-key')
+    }
+    
+    stages {
+        stage('Install Dependencies') {
+            steps {
+                sh 'cd sdk && npm ci'
+            }
+        }
+        
+        stage('Run Visual Tests') {
+            steps {
+                sh 'cd sdk && npx smartui exec node sdkCloud.js'
+            }
+        }
+    }
+}
+```
+
+## Troubleshooting
+
+### Issue: `Error: SmartUI Config already exists: smartui-web.json`
+
+**Solution**: This is informational. The config file already exists. You can:
+- Use the existing config file
+- Delete it and create a new one: `rm smartui-web.json && npx smartui config:create smartui-web.json`
+- Use a different config file: `npx smartui --config custom-config.json exec ...`
+
+### Issue: `PROJECT_TOKEN is required`
+
+**Solution**: Ensure the `PROJECT_TOKEN` environment variable is set:
+```bash
+export PROJECT_TOKEN='your_project_token'
+# Verify it's set
+echo $PROJECT_TOKEN
+```
+
+### Issue: `Unauthorized, either Username or AccessKey is invalid` (Cloud)
+
+**Solution**: 
+1. Verify your credentials are set correctly:
+   ```bash
+   echo $LT_USERNAME
+   echo $LT_ACCESS_KEY
+   ```
+2. Check your credentials in [LambdaTest Profile Settings](https://accounts.lambdatest.com/profile)
+3. Ensure there are no extra spaces or quotes in the environment variables
+
+### Issue: `Cannot find module '@lambdatest/selenium-driver'`
+
+**Solution**: Install dependencies:
 ```bash
 cd sdk
-npm i @lambdatest/smartui-cli @lambdatest/selenium-driver selenium-webdriver
+npm install @lambdatest/smartui-cli @lambdatest/selenium-driver selenium-webdriver
 ```
-- Configure your Project Token
 
-Setup your project token show in the **SmartUI** app after, creating your project.
+### Issue: Screenshots not appearing in SmartUI Dashboard
 
-<Tabs className="docs__val" groupId="language">
-<TabItem value="MacOS/Linux" label="MacOS/Linux" default>
+**Solution**:
+1. Verify the `PROJECT_TOKEN` matches your SmartUI project
+2. Check that the build completed successfully (no errors in terminal)
+3. Wait a few moments for screenshots to process
+4. Verify you're looking at the correct project in the dashboard
+
+### Issue: `ChromeDriver version mismatch` (Local)
+
+**Solution**: 
+1. Update ChromeDriver: `npm install --save-dev chromedriver`
+2. Or use WebDriver Manager: `npm install --save-dev webdriver-manager`
+3. Ensure Chrome browser is up to date
+
+### Issue: Timeout errors when taking screenshots
+
+**Solution**: 
+1. Increase `waitForPageRender` in `smartui-web.json`:
+   ```json
+   {
+     "web": {
+       "waitForPageRender": 60000
+     }
+   }
+   ```
+2. Add explicit waits before taking screenshots:
+   ```javascript
+   await driver.wait(until.elementLocated(By.id('main-content')), 10000);
+   await smartuiSnapshot(driver, "screenshot");
+   ```
+
+### Issue: False positives in visual comparisons
+
+**Solution**:
+1. Use ignore options for dynamic content (ads, timestamps, etc.)
+2. Increase `waitForTimeout` in `smartui-web.json` for lazy-loaded content
+3. Use viewport-specific screenshots instead of full-page when appropriate
+4. Review and update baseline screenshots when intentional changes are made
+
+## Configuration Tips
+
+### Optimizing `smartui-web.json`
+
+```json
+{
+  "web": {
+    "browsers": ["chrome", "firefox"],
+    "viewports": [
+      [1920, 1080],
+      [1366, 768],
+      [360, 640]
+    ],
+    "waitForPageRender": 30000,
+    "waitForTimeout": 2000
+  }
+}
+```
+
+**Tips**:
+- Start with fewer browsers/viewports for faster initial testing
+- Adjust `waitForPageRender` based on your page load times
+- Use `waitForTimeout` for async components (lazy-loaded images, animations)
+
+### Environment-Specific Configuration
+
+Create different config files for different environments:
 
 ```bash
-export PROJECT_TOKEN="123456#1234abcd-****-****-****-************"
+# Development
+npx smartui --config smartui-dev.json exec node sdkLocal.js
+
+# Staging
+npx smartui --config smartui-staging.json exec node sdkCloud.js
+
+# Production
+npx smartui --config smartui-prod.json exec node sdkCloud.js
 ```
 
-</TabItem>
-<TabItem value="Windows" label="Windows - CMD">
+## View Results
 
-```bash
-set PROJECT_TOKEN="123456#1234abcd-****-****-****-************"
-```
+After running the tests, visit your SmartUI project dashboard to view the captured screenshots and compare them with baseline builds.
 
-</TabItem>
-<TabItem value="Powershell" label="Windows-PS">
+### Understanding Results
 
-```bash
-$Env:PROJECT_TOKEN="123456#1234abcd-****-****-****-************"
-```
-</TabItem>
-</Tabs>
+- **Baseline Created**: First run creates baseline screenshots
+- **Passed**: Screenshot matches baseline (no visual differences)
+- **Failed**: Visual differences detected
+- **Review Required**: Manual review needed for differences
 
-- Add the SmartUI function to take screenshot to `sdkLocal.js` file
-```js
-import  { Builder, By, Key, until } from 'selenium-webdriver';
-import { smartuiSnapshot } from '@lambdatest/selenium-driver';
+### Managing Baselines
 
-(async function example() {
-    let driver = await new Builder()
-        .forBrowser('chrome')
-        .build();
+- Update baseline when intentional UI changes are made
+- Review failed comparisons to identify false positives
+- Use ignore options to exclude known dynamic content
 
-    try {
-        await driver.get('<Required URL>'); //enter your desired URL here
-        await smartuiSnapshot(driver, '<Screenshot_Name>');
-    } finally {
-        await driver.quit();
-    }
-})();
-```
-- Execute the Tests on SmartUI Cloud
+## Additional Resources
 
-```bash
-npx smartui exec node <fileName>.js
-```
+- [SmartUI Selenium JavaScript Onboarding Guide](https://www.lambdatest.com/support/docs/smartui-onboarding-selenium-js/)
+- [LambdaTest Selenium Documentation](https://www.lambdatest.com/support/docs/selenium-automation/)
+- [SmartUI Dashboard](https://smartui.lambdatest.com/)
+- [LambdaTest Automation Dashboard](https://automation.lambdatest.com/)
+- [LambdaTest Community](https://community.lambdatest.com/)
+- [LambdaTest Blog](https://www.lambdatest.com/blog/)
+
+## Support
+
+For additional help:
+- [LambdaTest Support](https://www.lambdatest.com/support/)
+- [Documentation](https://www.lambdatest.com/support/docs/)
+- [24/7 Chat Support](https://www.lambdatest.com/)
