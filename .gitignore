@@ -1,0 +1,5 @@
+node_modules/
+.smartui.log
+*.log
+.DS_Store
+
